@@ -1,8 +1,8 @@
 import { commands, env, Uri, window } from 'vscode'
-import { Commands } from '../core'
 import { ExtensionModule } from '../modules'
 import Links from '../links'
-import i18n from '../i18n'
+import { Commands } from '~/commands'
+import i18n from '~/i18n'
 
 const m: ExtensionModule = (ctx) => {
   return [
@@ -17,9 +17,6 @@ const m: ExtensionModule = (ctx) => {
         const options = [{
           text: i18n.t('prompt.star_on_github'),
           url: Links.github,
-        }, {
-          text: i18n.t('prompt.donate'),
-          url: Links.open_collective,
         }]
         const result = await window.showInformationMessage(
           i18n.t('prompt.support'),

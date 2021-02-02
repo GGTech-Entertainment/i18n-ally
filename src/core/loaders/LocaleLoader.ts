@@ -4,16 +4,14 @@ import fg from 'fast-glob'
 import _, { uniq, throttle, set } from 'lodash'
 import fs from 'fs-extra'
 import { findBestMatch } from 'string-similarity'
-import { ReplaceLocale } from '../../utils/PathMatcher'
+import { ReplaceLocale, Log, applyPendingToObject, unflatten, NodeHelper, getCache, setCache } from '../../utils'
 import { FILEWATCHER_TIMEOUT } from '../../meta'
-import { Log, applyPendingToObject, unflatten, NodeHelper } from '../../utils'
-import i18n from '../../i18n'
 import { ParsedFile, PendingWrite, DirStructure, TargetPickingStrategy } from '../types'
 import { LocaleTree } from '../Nodes'
 import { AllyError, ErrorType } from '../Errors'
-import { getCache, setCache } from '../../utils/cache'
 import { Analyst, Global, Config } from '..'
 import { Loader } from './Loader'
+import i18n from '~/i18n'
 
 const THROTTLE_DELAY = 1500
 
@@ -604,15 +602,21 @@ export class LocaleLoader extends Loader {
   private async findLocaleDirs() {
     this._files = {}
     this._locale_dirs = []
-    if (this.localesPaths.length > 0) {
+    const localesPaths = this.localesPaths
+    if (localesPaths.length > 0) {
       try {
-        this._locale_dirs = await fg(this.localesPaths, {
+        const _locale_dirs = await fg(localesPaths, {
           cwd: this.rootpath,
           onlyDirectories: true,
         })
 
-        this._locale_dirs = this._locale_dirs
-          .map(p => path.resolve(this.rootpath, p))
+        if (localesPaths.includes('.'))
+          _locale_dirs.push('.')
+
+        this._locale_dirs = uniq(
+          _locale_dirs
+            .map(p => path.resolve(this.rootpath, p)),
+        )
       }
       catch (e) {
         Log.error(e)

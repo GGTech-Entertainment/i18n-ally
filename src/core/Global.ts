@@ -5,17 +5,17 @@ import { ParsePathMatcher } from '../utils/PathMatcher'
 import { EXT_NAMESPACE } from '../meta'
 import { ConfigLocalesGuide } from '../commands/configLocalePaths'
 import { AvailableParsers, DefaultEnabledParsers } from '../parsers'
-import { Log, getExtOfLanguageId, normalizeUsageMatchRegex } from '../utils'
 import { Framework } from '../frameworks/base'
 import { getEnabledFrameworks, getEnabledFrameworksByIds, getPackageDependencies } from '../frameworks'
 import { checkNotification } from '../update-notification'
-import i18n from '../i18n'
 import { Reviews } from './Review'
 import { CurrentFile } from './CurrentFile'
 import { Config } from './Config'
 import { DirStructure, OptionalFeatures, KeyStyle } from './types'
 import { LocaleLoader } from './loaders/LocaleLoader'
 import { Analyst } from './Analyst'
+import i18n from '~/i18n'
+import { Log, getExtOfLanguageId, normalizeUsageMatchRegex } from '~/utils'
 
 export class Global {
   private static _loaders: Record<string, LocaleLoader> = {}
@@ -125,7 +125,12 @@ export class Global {
       .flatMap(f => f.languageIds)
       .flatMap(id => getExtOfLanguageId(id)))
 
-    return `**/*.{${exts.join(',')}}`
+    if (!exts.length)
+      return ''
+    else if (exts.length === 1)
+      return `**/*.${exts[0]}`
+    else
+      return `**/*.{${exts.join(',')}}`
   }
 
   static getNamespaceDelimiter() {

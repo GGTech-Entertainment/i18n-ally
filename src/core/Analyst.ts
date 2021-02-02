@@ -8,11 +8,11 @@ import micromatch from 'micromatch'
 // @ts-ignore
 import parseGitIgnore from 'parse-gitignore'
 import _, { uniq } from 'lodash'
-import { Log } from '../utils'
 import { Global } from './Global'
 import { CurrentFile } from './CurrentFile'
 import { UsageReport } from './types'
 import { KeyDetector, Config, KeyOccurrence, KeyUsage } from '.'
+import { Log } from '~/utils'
 
 export class Analyst {
   private static _cache: KeyOccurrence[] | null = null
@@ -77,10 +77,13 @@ export class Analyst {
       ...Config.usageScanningIgnore,
     ]
 
-    const files = await glob(Global.getSupportLangGlob(), {
+    const langGlob = Global.getSupportLangGlob()
+    const files = await glob(langGlob, {
       cwd: root,
       ignore,
     }) as string[]
+
+    console.log(langGlob, files)
 
     return files.map(f => resolve(root, f))
       .filter(f => !fs.lstatSync(f).isDirectory())
