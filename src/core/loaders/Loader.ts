@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Disposable, EventEmitter } from 'vscode'
 import { uniq, isObject } from 'lodash'
 import { LocaleTree, LocaleNode, LocaleRecord, FlattenLocaleTree } from '../Nodes'
 import { Coverage, FileInfo, PendingWrite, NodeOptions, RewriteKeySource, RewriteKeyContext, DataProcessContext } from '../types'
-import { resolveFlattenRootKeypath, resolveFlattenRoot, NodeHelper } from '../../utils'
 import { Config, Global } from '..'
+import { resolveFlattenRootKeypath, resolveFlattenRoot, NodeHelper } from '~/utils'
 
 export abstract class Loader extends Disposable {
   protected _disposables: Disposable[] = []
@@ -289,6 +290,11 @@ export abstract class Loader extends Disposable {
 
   canHandleWrites(pending: PendingWrite) {
     return false
+  }
+
+  searchKeyForTranslations(text: string, locale = Config.sourceLanguage) {
+    return this.keys
+      .find(i => this.getTranslationsByKey(i, false)?.[locale]?.value === text)
   }
 
   protected onDispose() {

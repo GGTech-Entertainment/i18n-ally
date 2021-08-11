@@ -1,6 +1,8 @@
-import { Range, TextDocument } from 'vscode'
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { TextDocument } from 'vscode'
 import { LanguageId } from '~/utils'
 import { DirStructure, OptionalFeatures, RewriteKeySource, RewriteKeyContext, DataProcessContext, KeyStyle, Config } from '~/core'
+import { DetectionResult } from '~/core/types'
 
 export type FrameworkDetectionDefine = string[] | { none?: string[]; every?: string[]; any?: string[] } | ((packages: string[], root: string) => boolean)
 
@@ -17,11 +19,6 @@ export interface ScopeRange {
   namespace: string
 }
 
-export interface HardStringInfo {
-  range: Range
-  value: string
-}
-
 export abstract class Framework {
   abstract id: string
   abstract display: string
@@ -29,7 +26,7 @@ export abstract class Framework {
   enabledParsers?: string[]
   derivedKeyRules?: string[]
   namespaceDelimiter?: string
-  supportAutoExtraction?: boolean
+  supportAutoExtraction?: string[]
 
   /**
    * Packages names determine whether a frameworks should enable or not
@@ -49,12 +46,12 @@ export abstract class Framework {
   /**
    * Return possible choices of replacement for messages extracted from code
    */
-  abstract refactorTemplates (keypath: string, languageId?: string): string[]
+  abstract refactorTemplates (keypath: string, args?: string[], document?: TextDocument, detection?: DetectionResult): string[]
 
   /**
    * Analysis the file and get hard strings
    */
-  getHardStrings(document: TextDocument): HardStringInfo[] | undefined {
+  detectHardStrings(document: TextDocument): DetectionResult[] | undefined {
     return undefined
   }
 

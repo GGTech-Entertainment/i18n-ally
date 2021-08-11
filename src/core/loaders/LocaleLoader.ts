@@ -4,13 +4,14 @@ import fg from 'fast-glob'
 import _, { uniq, throttle, set } from 'lodash'
 import fs from 'fs-extra'
 import { findBestMatch } from 'string-similarity'
-import { ReplaceLocale, Log, applyPendingToObject, unflatten, NodeHelper, getCache, setCache } from '../../utils'
 import { FILEWATCHER_TIMEOUT } from '../../meta'
 import { ParsedFile, PendingWrite, DirStructure, TargetPickingStrategy } from '../types'
 import { LocaleTree } from '../Nodes'
 import { AllyError, ErrorType } from '../Errors'
 import { Analyst, Global, Config } from '..'
+import { Telemetry, TelemetryKey } from '../Telemetry'
 import { Loader } from './Loader'
+import { ReplaceLocale, Log, applyPendingToObject, unflatten, NodeHelper, getCache, setCache } from '~/utils'
 import i18n from '~/i18n'
 
 const THROTTLE_DELAY = 1500
@@ -467,6 +468,7 @@ export class LocaleLoader extends Loader {
     catch (e) {
       this.unsetFile(relativePath)
       Log.info(`🐛 Failed to load ${e}`, 2)
+      // eslint-disable-next-line no-console
       console.error(e)
     }
   }
@@ -603,7 +605,7 @@ export class LocaleLoader extends Loader {
     this._files = {}
     this._locale_dirs = []
     const localesPaths = this.localesPaths
-    if (localesPaths.length > 0) {
+    if (localesPaths?.length) {
       try {
         const _locale_dirs = await fg(localesPaths, {
           cwd: this.rootpath,
@@ -640,6 +642,9 @@ export class LocaleLoader extends Loader {
           this.watchOn(pathname)
         if (!this.files.length)
           window.showWarningMessage(i18n.t('prompt.no_locale_loaded'))
+
+        if (this.files.length && this.keys.length)
+          Telemetry.track(TelemetryKey.Activated)
       }
       catch (e) {
         Log.error(e)

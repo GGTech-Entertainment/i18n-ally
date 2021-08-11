@@ -13,18 +13,20 @@ class NgxTranslateFramework extends Framework {
 
   languageIds: LanguageId[] = [
     'javascript',
+    'javascriptreact',
     'typescript',
+    'typescriptreact',
     'html',
   ]
 
   // for visualize the regex, you can use https://regexper.com/
   usageMatchRegex= [
     '[`\'"]({key})[`\'"][\\s\\n]*\\|[\\s\\n]*translate',
-    '(?:translate|translateService)\\.(?:get|instant)\\([\\s\\n]*[\'"`]({key})[\'"`]',
+    '(?:translate|translateService)\\.(?:get|instant|stream)\\([\\s\\n]*\[[\\s\\n]*[\'"`]({key})[\'"`]',
     '[\\s\\n]translate>[\\s\\n]*({key})[\\s\\n]*</',
   ]
 
-  refactorTemplates(keypath: string, languageId: string) {
+  refactorTemplates(keypath: string) {
     return [
       `{{ '${keypath}' | translate }}`,
       keypath,

@@ -1,4 +1,4 @@
-import { RewriteKeySource, RewriteKeyContext } from '../core/types'
+import { RewriteKeySource } from '../core/types'
 import { Framework } from './base'
 import { LanguageId } from '~/utils'
 
@@ -18,7 +18,7 @@ class ChromeExtensionFramework extends Framework {
     'i18n\\.getMessage\\(\\s*[\'"`]({key})[\'"`]',
   ]
 
-  refactorTemplates(keypath: string, languageId: string) {
+  refactorTemplates(keypath: string) {
     return [
       `chrome.i18n.getMessage('${keypath}')`,
       `browser.i18n.getMessage('${keypath}')`,
@@ -26,7 +26,7 @@ class ChromeExtensionFramework extends Framework {
     ]
   }
 
-  rewriteKeys(key: string, source: RewriteKeySource, context: RewriteKeyContext = {}) {
+  rewriteKeys(key: string, source: RewriteKeySource) {
     if (source === 'reference' && !key.endsWith('.message'))
       return `${key}.message`
     if (source === 'write' && !key.endsWith('.message'))

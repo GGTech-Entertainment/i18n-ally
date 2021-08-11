@@ -19,11 +19,13 @@ interface DeepLTranslateRes {
   translations: DeepLTranslate[]
 }
 
-const deepl = axios.create({
-  baseURL: 'https://api.deepl.com/v2',
-})
+const deepl = axios.create({})
 
 deepl.interceptors.request.use((req) => {
+  req.baseURL = Config.deeplUseFreeApiEntry
+    ? 'https://api-free.deepl.com/v2'
+    : 'https://api.deepl.com/v2'
+
   req.params = {
     auth_key: Config.deeplApiKey,
   }
@@ -46,6 +48,7 @@ deepl.interceptors.response.use((res) => {
 
 function log(inspector: boolean, ...args: any[]): void {
   if (Config.deeplLog) {
+    // eslint-disable-next-line no-console
     if (inspector) console.log('[DeepL]\n', ...args)
     else Log.raw(...args)
   }

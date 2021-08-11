@@ -1,15 +1,19 @@
 import { commands, env, Uri, window } from 'vscode'
-import { ExtensionModule } from '../modules'
-import Links from '../links'
+import { ExtensionModule } from '~/modules'
+import Links from '~/links'
 import { Commands } from '~/commands'
 import i18n from '~/i18n'
 
-const m: ExtensionModule = (ctx) => {
+export default <ExtensionModule> function() {
   return [
     commands.registerCommand(Commands.open_url,
       async(url: string) => {
-        // @ts-ignore
         await env.openExternal(Uri.parse(url))
+      }),
+
+    commands.registerCommand(Commands.open_docs_hard_string,
+      async() => {
+        await env.openExternal(Uri.parse('https://github.com/lokalise/i18n-ally/wiki/Hard-coded-Strings-Extraction'))
       }),
 
     commands.registerCommand(Commands.support,
@@ -29,5 +33,3 @@ const m: ExtensionModule = (ctx) => {
       }),
   ]
 }
-
-export default m

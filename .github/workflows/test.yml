@@ -11,6 +11,11 @@ jobs:
       fail-fast: false
 
     steps:
+      - name: Set git to use LF
+        run: |
+          git config --global core.autocrlf false
+          git config --global core.eol lf
+
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
@@ -32,13 +37,13 @@ jobs:
           CI: true
 
       - name: E2E Tests
-        run: yarn run test:e2e
+        run: yarn run test:e2e && yarn run test:fixture
         if: runner.os != 'Linux'
         env:
           CI: true
 
       - name: E2E Tests (Linux)
-        run: xvfb-run -a yarn run test:e2e
+        run: xvfb-run -a yarn run test:e2e && xvfb-run -a yarn run test:fixture
         if: runner.os == 'Linux'
         env:
           CI: true

@@ -1,5 +1,4 @@
-// @ts-ignore
-import bcp47 from 'bcp-47'
+import * as bcp47 from 'bcp-47'
 import { BaseTagSystem } from './base'
 import { Config } from '~/core'
 
@@ -18,7 +17,9 @@ export class BCP47 extends BaseTagSystem {
 
   toFlagname(locale: string) {
     const { region, language } = bcp47.parse(locale, { normalize: true, forgiving: true })
-    return (region || Config.localeCountryMap[language] || '').toLowerCase()
+    if (!language)
+      return ''
+    return (region || Config.localeCountryMap[language] || language || '').toLowerCase()
   }
 
   lookup(locale: string) {
